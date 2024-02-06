@@ -1,0 +1,63 @@
+---
+import { getLocale } from 'astro-i18n-aut';
+import { getCollection } from 'astro:content';
+
+const locale = getLocale(Astro.url);
+
+const allCollectionsTx = await getCollection('home');
+const filteredTx = allCollectionsTx.filter((collection) => collection.data.locale === locale)[0];
+const {
+	test,
+} = filteredTx?.data;
+---
+
+<style>
+	#testButton {
+		padding: 10px 20px;
+		background-color: #4CAF50;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 16px;
+	}
+
+	#testButton:hover {
+		background-color: #45a049;
+	}
+</style>
+
+<script>
+	import axios, { type AxiosRequestConfig } from 'axios';
+
+	async function testApi() {
+		const options: AxiosRequestConfig = {
+			headers: { 'Content-Type': 'multipart/form-data' },
+		};
+
+		const res = await axios.post('/api/upload', { test: 'test ' }, options).catch((error) => {
+			console.error(error);
+			return error;
+		});
+
+		console.debug(res);
+
+		if (!res) return;
+
+		console.log(res)
+	}
+
+		// Adds the event listens to dom elements
+	function addEventListeners() {
+		const button = document.getElementById('testButton');
+
+		if (button) {
+			button.addEventListener('click', testApi);
+		}
+	}
+
+	addEventListeners();
+</script>
+
+<button id="testButton">Click to Test API</button>
+<div>{test}</div>
